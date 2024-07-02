@@ -43,8 +43,7 @@ namespace SNAKEGAME {
 			g->FillRectangle(fruitBrush, fruitPosition.X, fruitPosition.Y, blockSize, blockSize);
 
 			Brush^ snakeBrush = gcnew SolidBrush(Color::Green);
-			for each (Point el in snake)
-				g->FillRectangle(snakeBrush, el.X, el.Y, blockSize, blockSize);
+			g->FillRectangle(snakeBrush, snake.X, snake.Y, blockSize, blockSize);
 		}
 
 	private:
@@ -52,9 +51,12 @@ namespace SNAKEGAME {
 		/// Обязательная переменная конструктора.
 		/// </summary>
 		System::ComponentModel::Container ^components;
-		List<Point>^ snake;
+		Point snake;
 		Point fruitPosition;
 		const int blockSize = 20;
+
+		Timer^ timer;
+		int moveX = 1, moveY = 0;	
 
 #pragma region Windows Form Designer generated code
 		/// <summary>
@@ -70,25 +72,30 @@ namespace SNAKEGAME {
 			this->Padding = System::Windows::Forms::Padding(0);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 
-			snake = gcnew List<Point>();
-			snake->Add(Point(200, 200));
+			snake = Point(200, 200); 
 
 			srand(time(NULL));
 			PlaceFruit();
 
-			this->Paint += gcnew PaintEventHandler(this, &GameForm::OnPaint);
+			timer = gcnew Timer();
+			timer->Interval = 100;
+			timer->Tick += gcnew EventHandler(this, &Game::OnTimerTick);
+			timer->Start();
+
+			this->Paint += gcnew PaintEventHandler(this, &Game::OnPaint);
 		}
 #pragma endregion
 		void PlaceFruit()
 		{
 			int maxX = this->ClientSize.Width / blockSize;
 			int maxY = this->ClientSize.Height / blockSize;
-
-			do
-			{
-				fruitPosition = Point(rand() % maxX * blockSize, rand() % maxY * blockSize);
-			} while (snake->Contains(fruitPosition));
-
+			fruitPosition = Point(rand() % maxX * blockSize, rand() % maxY * blockSize);
+		}
+		void OnTimerTick(Object^ lbj, EventArgs^ e)
+		{
+			snake.X += moveX;
+			snake.Y += moveY;
+			this->Invalidate();
 		}
 	};
 }
