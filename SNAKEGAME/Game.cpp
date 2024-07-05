@@ -10,3 +10,4 @@ int main(array<String^>^ args)
 	SNAKEGAME::Game form;
 	Application::Run(% form);
 }
+

@@ -9,6 +9,7 @@ namespace SNAKEGAME {
 	using namespace System::Windows::Forms;
 	using namespace System::Data;
 	using namespace System::Drawing;
+	using namespace System::Collections::Generic;
 
 	/// <summary>
 	/// Сводка для Game
@@ -43,7 +44,8 @@ namespace SNAKEGAME {
 			g->FillRectangle(fruitBrush, fruitPosition.X, fruitPosition.Y, blockSize, blockSize);
 
 			Brush^ snakeBrush = gcnew SolidBrush(Color::Green);
-			g->FillRectangle(snakeBrush, snake.X, snake.Y, blockSize, blockSize);
+			for each (Point el in snake)
+				g->FillRectangle(snakeBrush, el.X, el.Y, blockSize, blockSize);
 		}
 
 	private:
@@ -51,7 +53,7 @@ namespace SNAKEGAME {
 		/// Обязательная переменная конструктора.
 		/// </summary>
 		System::ComponentModel::Container ^components;
-		Point snake;
+		List<Point>^ snake;
 		Point fruitPosition;
 		const int blockSize = 20;
 
@@ -72,7 +74,8 @@ namespace SNAKEGAME {
 			this->Padding = System::Windows::Forms::Padding(0);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 
-			snake = Point(200, 200); 
+			snake = gcnew List<Point>();
+			snake->Add(Point(200, 200));
 
 			srand(time(NULL));
 			PlaceFruit();
@@ -83,6 +86,7 @@ namespace SNAKEGAME {
 			timer->Start();
 
 			this->Paint += gcnew PaintEventHandler(this, &Game::OnPaint);
+			this->KeyDown += gcnew KeyEventHandler(this, &Game::OnKeyDown);
 		}
 #pragma endregion
 		void PlaceFruit()
@@ -93,9 +97,38 @@ namespace SNAKEGAME {
 		}
 		void OnTimerTick(Object^ lbj, EventArgs^ e)
 		{
-			snake.X += moveX;
-			snake.Y += moveY;
-			this->Invalidate();
+			snake.X += moveX * blockSize;
+			snake.Y += moveY * blockSize;
+			
+			if (snake == fruitPosition)
+			{
+				PlaceFruit();
+				if (timer->Interval > 60)
+					timer->Interval -= 5;
+				this->Invalidate();
+			}
+		}
+		void OnKeyDown(Object^ obj, KeyEventArgs^ e)
+		{
+			switch (e->KeyCode)
+			{
+			case Keys::Up:
+				moveX = 0;
+				moveY = -1;
+				break;
+			case Keys::Down:
+				moveX = 0;
+				moveY = 1;
+				break;
+			case Keys::Left:
+				moveX = -1;
+				moveY = 0;
+				break;
+			case Keys::Right:
+				moveX = 1;
+				moveY = 0;
+				break;
+			}
 		}
 	};
 }
