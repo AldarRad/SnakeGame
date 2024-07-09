@@ -93,12 +93,14 @@ namespace SNAKEGAME {
 		{
 			int maxX = this->ClientSize.Width / blockSize;
 			int maxY = this->ClientSize.Height / blockSize;
-			fruitPosition = Point(rand() % maxX * blockSize, rand() % maxY * blockSize);
+			do
+			{
+				fruitPosition = Point(rand() % maxX * blockSize, rand() % maxY * blockSize);
+			} while (snake->Contains(fruitPosition));
 		}
 		void OnTimerTick(Object^ lbj, EventArgs^ e)
 		{
-			snake.X += moveX * blockSize;
-			snake.Y += moveY * blockSize;
+			MoveSnake();
 			
 			if (snake == fruitPosition)
 			{
@@ -107,6 +109,14 @@ namespace SNAKEGAME {
 					timer->Interval -= 5;
 				this->Invalidate();
 			}
+		}
+		void MoveSnake()
+		{
+			Point newHead = snake[0];
+			newHead.X += moveX * blockSize;
+			newHead.Y += moveY * blockSize;
+			snake->Insert(0, newHead);
+			snake->RemoveAt(snake->Count - 1);
 		}
 		void OnKeyDown(Object^ obj, KeyEventArgs^ e)
 		{
