@@ -101,6 +101,13 @@ namespace SNAKEGAME {
 		void OnTimerTick(Object^ lbj, EventArgs^ e)
 		{
 			MoveSnake();
+
+			if (snake[0].X < 0 || snake[0].Y < 0 || snake[0].X >= this->ClientSize.Width || snake[0].Y >= this->ClientSize.Height)
+			{
+				timer->Stop();
+				MessageBox::Show("Game Over");
+				return;
+			}
 			
 			if (snake[0] == fruitPosition)
 			{
