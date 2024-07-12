@@ -81,7 +81,7 @@ namespace SNAKEGAME {
 			PlaceFruit();
 
 			timer = gcnew Timer();
-			timer->Interval = 100;
+			timer->Interval = 200;
 			timer->Tick += gcnew EventHandler(this, &Game::OnTimerTick);
 			timer->Start();
 
@@ -102,17 +102,28 @@ namespace SNAKEGAME {
 		{
 			MoveSnake();
 			
-			if (snake == fruitPosition)
+			if (snake[0] == fruitPosition)
 			{
+				GrowthSnake();
 				PlaceFruit();
+				
 				if (timer->Interval > 60)
-					timer->Interval -= 5;
-				this->Invalidate();
+					timer->Interval -= 20;// 5		
 			}
+			this->Invalidate();
+		}
+		void GrowthSnake()
+		{
+			Point newHead = snake[0];
+
+			newHead.X += moveX * blockSize;
+			newHead.Y += moveY * blockSize;
+			snake->Insert(0, newHead);
 		}
 		void MoveSnake()
 		{
 			Point newHead = snake[0];
+
 			newHead.X += moveX * blockSize;
 			newHead.Y += moveY * blockSize;
 			snake->Insert(0, newHead);
