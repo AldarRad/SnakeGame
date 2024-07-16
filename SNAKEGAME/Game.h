@@ -57,6 +57,9 @@ namespace SNAKEGAME {
 		Point fruitPosition;
 		const int blockSize = 20;
 
+		int fruitCount = 0;
+		Label^ scoreLabel;
+
 		Timer^ timer;
 		int moveX = 1, moveY = 0;	
 
@@ -73,6 +76,13 @@ namespace SNAKEGAME {
 			this->BackColor = Color::Black; 
 			this->Padding = System::Windows::Forms::Padding(0);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
+
+			scoreLabel = gcnew Label();
+			scoreLabel->ForeColor = Color::White;
+			scoreLabel->ForeColor = Color::Transparent;
+			scoreLabel->Text = "0";
+			scoreLabel->Location = Point(0, 0);
+			this->Controls->Add(scoreLabel);
 
 			snake = gcnew List<Point>();
 			snake->Add(Point(200, 200));
@@ -109,8 +119,24 @@ namespace SNAKEGAME {
 				return;
 			}
 			
+			if (snake->Count >= 4)
+			{
+				for (int i = 1;i < snake->Count;i++)
+				{
+					if (snake[0] == snake[i])
+					{
+						timer->Stop();
+						MessageBox::Show("Game Over. You ate yourself!");
+						return;
+					}
+				}
+			}
+
 			if (snake[0] == fruitPosition)
 			{
+				fruitCount++;
+				scoreLabel->Text = "" + fruitCount.ToString();
+
 				GrowthSnake();
 				PlaceFruit();
 				
